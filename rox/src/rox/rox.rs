@@ -12,7 +12,21 @@ pub fn run_file(filename: &String) -> () {
     run(buf);
 }
 
-pub fn run_prompt() {}
+pub fn run_prompt() {
+    let stdin = std::io::stdin();
+
+    loop {
+        print!("> ");
+        let mut input = String::new();
+        let _ = stdin.read_line(input);
+
+        if input.len() == 0 {
+            break;
+        }
+
+        run(input);
+    }
+}
 
 fn run(file: &Vec<u8>) -> () {
     todo!()
