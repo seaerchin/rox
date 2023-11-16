@@ -2,6 +2,8 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use super::scanner::Scanner;
+
 pub fn run_file(filename: &String) -> () {
     // get path
     // read file as bytes
@@ -29,5 +31,10 @@ pub fn run_prompt() {
 }
 
 fn run(file: &Vec<u8>) -> () {
-    todo!()
+    let scanner = Scanner::new();
+    let tokens = scanner.scan_tokens();
+
+    for token in tokens {
+        println!("{token}");
+    }
 }
