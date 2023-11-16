@@ -4,4 +4,5 @@ pub fn error(line: isize, message: &str) {
 
 fn report(line: isize, whr: &str, message: &str) {
     println!("[line {line}] Error {whr}: {message}");
+    let had_error = true;
 }
