@@ -3,12 +3,13 @@ use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let mut lox = Lox::new();
     if args.len() > 1 {
         println!("Usage: rox [script]");
         std::process::exit(64);
     } else if args.len() == 1 {
-        run_file(&args[0])
+        lox.run_file(&args[0])
     } else {
-        run_prompt();
+        lox.run_prompt();
     }
 }
