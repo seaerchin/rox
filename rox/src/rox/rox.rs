@@ -1,4 +1,3 @@
-use std::alloc::System;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -50,7 +49,7 @@ impl Lox {
     }
 
     fn run(contents: &String) {
-        let scanner = Scanner::new(contents);
+        let mut scanner = Scanner::new(contents);
         let tokens = scanner.scan_tokens();
 
         for token in tokens {
@@ -58,11 +57,11 @@ impl Lox {
         }
     }
 
-    pub fn error(&mut self, line: isize, message: &str) {
+    pub fn error(&mut self, line: i32, message: &str) {
         self.report(line, "", message);
     }
 
-    fn report(&mut self, line: isize, whr: &str, message: &str) {
+    fn report(&mut self, line: i32, whr: &str, message: &str) {
         println!("[line {line}] Error {whr}: {message}");
         self.has_error = true;
     }
