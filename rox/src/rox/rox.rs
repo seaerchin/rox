@@ -3,15 +3,18 @@ use std::io::Read;
 use std::path::Path;
 use std::process::exit;
 
+use super::error::Reporter;
 use super::scanner::Scanner;
 
-pub struct Lox {
-    has_error: bool,
+pub struct Rox {
+    reporter: Reporter,
 }
 
-impl Lox {
-    pub fn new() -> Lox {
-        Lox { has_error: false }
+impl Rox {
+    pub fn new() -> Rox {
+        Rox {
+            reporter: Reporter::new(),
+        }
     }
 
     pub fn run_file(&mut self, filename: &String) -> () {
@@ -25,7 +28,7 @@ impl Lox {
             .read_to_end(&mut buf);
         Self::run(&String::from_utf8_lossy(&buf).into());
 
-        self.has_error = false;
+        self.reporter.has_error = false;
     }
 
     pub fn run_prompt(&mut self) {
@@ -42,7 +45,7 @@ impl Lox {
 
             Self::run(&input);
 
-            if self.has_error {
+            if self.reporter.has_error {
                 exit(65);
             }
         }
@@ -55,14 +58,5 @@ impl Lox {
         for token in tokens {
             println!("{token}");
         }
-    }
-
-    pub fn error(&mut self, line: i32, message: &str) {
-        self.report(line, "", message);
-    }
-
-    fn report(&mut self, line: i32, whr: &str, message: &str) {
-        println!("[line {line}] Error {whr}: {message}");
-        self.has_error = true;
     }
 }

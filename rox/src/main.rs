@@ -3,7 +3,7 @@ use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut lox = Lox::new();
+    let mut lox = Rox::new();
     if args.len() > 1 {
         println!("Usage: rox [script]");
         std::process::exit(64);

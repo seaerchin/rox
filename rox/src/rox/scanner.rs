@@ -1,6 +1,6 @@
 use crate::rox::token_type::TokenType;
 
-use super::token::Token;
+use super::{error::Reporter, token::Token};
 
 pub struct Scanner {
     source: String,
@@ -8,6 +8,7 @@ pub struct Scanner {
     start: i32,
     current: i32,
     cur_line: i32,
+    reporter: Reporter,
 }
 
 impl Scanner {
@@ -18,6 +19,7 @@ impl Scanner {
             cur_line: 1,
             start: 0,
             current: 0,
+            reporter: Reporter::new(),
         }
     }
 
@@ -53,7 +55,7 @@ impl Scanner {
             '+' => self.add_token(TokenType::PLUS),
             ';' => self.add_token(TokenType::SEMICOLON),
             '*' => self.add_token(TokenType::STAR),
-            _ => todo!(),
+            _ => self.reporter.error(self.cur_line, "Unexpected character"),
         }
     }
 
