@@ -101,7 +101,12 @@ impl Scanner {
             ' ' | '\r' | '\t' => {}
             '\n' => self.cur_line += 1,
             '"' => self.string(),
-            _ => self.reporter.error(self.cur_line, "Unexpected character"),
+            _ => {
+                if is_digit(c) {
+                    self.number()
+                }
+                self.reporter.error(self.cur_line, "Unexpected character")
+            }
         }
     }
 
@@ -184,4 +189,28 @@ impl Scanner {
             .substring(self.start as usize + 1, self.current as usize - 1);
         self.add_token_with_literal(TokenType::STRING, String::from(substring))
     }
+
+    fn number(&mut self) {
+        loop {
+            match self.peek() {
+                Some(c) => {
+                    if is_digit(c) {
+                        self.advance();
+                    } else {
+                        break;
+                    }
+                }
+                // NOTE: The don't have to handle `None` case
+                // as this implies we hit a number prior to EOF
+                None => todo!(),
+            }
+        }
+    }
+}
+
+fn is_digit(c: char) -> bool {
+    if c >= '0' && c <= '9' {
+        return true;
+    }
+    return false;
 }
