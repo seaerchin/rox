@@ -191,20 +191,37 @@ impl Scanner {
     }
 
     fn number(&mut self) {
-        loop {
-            match self.peek() {
-                Some(c) => {
-                    if is_digit(c) {
-                        self.advance();
-                    } else {
-                        break;
-                    }
-                }
-                // NOTE: The don't have to handle `None` case
-                // as this implies we hit a number prior to EOF
-                None => todo!(),
+        while let Some(c) = self.peek() {
+            if is_digit(c) {
+                self.advance();
             }
         }
+
+        // <number> was previously consumed and we encountered a `.`
+        // check if part after `.` is numeric
+        if let (Some('.'), Some(c)) = (self.peek(), self.peek_next()) {
+            if is_digit(c) {
+                // matches <number>.<number>
+                self.advance(); // consumes the `.`
+                while let Some(c) = self.peek() {
+                    if is_digit(c) {
+                        self.advance();
+                    }
+                }
+            }
+        }
+
+        self.add_token_with_literal(
+            TokenType::NUMBER,
+            String::from(
+                self.source
+                    .substring(self.start as usize, self.current as usize),
+            ),
+        )
+    }
+
+    fn peek_next(&self) -> Option<char> {
+        todo!()
     }
 }
 
