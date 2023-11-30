@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::rox::token_type::TokenType;
 
 use super::substring::Substring;
@@ -10,6 +12,7 @@ pub struct Scanner {
     current: i32,
     cur_line: i32,
     reporter: Reporter,
+    keywords: HashMap<&'static str, TokenType>,
 }
 
 impl Scanner {
@@ -21,6 +24,24 @@ impl Scanner {
             start: 0,
             current: 0,
             reporter: Reporter::new(),
+            keywords: HashMap::from([
+                ("and", TokenType::AND),
+                ("class", TokenType::CLASS),
+                ("else", TokenType::ELSE),
+                ("false", TokenType::FALSE),
+                ("for", TokenType::FOR),
+                ("fun", TokenType::FUN),
+                ("if", TokenType::IF),
+                ("nil", TokenType::NIL),
+                ("or", TokenType::OR),
+                ("print", TokenType::PRINT),
+                ("return", TokenType::RETURN),
+                ("super", TokenType::SUPER),
+                ("this", TokenType::THIS),
+                ("true", TokenType::TRUE),
+                ("var", TokenType::VAR),
+                ("while", TokenType::WHILE),
+            ]),
         }
     }
 
@@ -104,8 +125,11 @@ impl Scanner {
             _ => {
                 if is_digit(c) {
                     self.number()
+                } else if is_alpha(c) {
+                    self.identifier()
+                } else {
+                    self.reporter.error(self.cur_line, "Unexpected character")
                 }
-                self.reporter.error(self.cur_line, "Unexpected character")
             }
         }
     }
@@ -221,8 +245,30 @@ impl Scanner {
     }
 
     fn peek_next(&self) -> Option<char> {
-        todo!()
+        self.source.chars().nth(self.current as usize + 1)
     }
+
+    fn identifier(&mut self) {
+        while let Some(c) = self.peek() {
+            if c.is_ascii_alphanumeric() {
+                self.advance();
+            }
+        }
+
+        let lit = self
+            .source
+            .substring(self.start as usize, self.current as usize);
+
+        if let Some(tok) = self.keywords.get(lit) {
+            self.add_token(tok.clone())
+        }
+
+        self.add_token(TokenType::IDENTIFIER)
+    }
+}
+
+fn is_alpha(c: char) -> bool {
+    c.is_ascii_alphabetic()
 }
 
 fn is_digit(c: char) -> bool {
